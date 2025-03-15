@@ -2,7 +2,7 @@
 
 namespace SubstringSearchLibrary.Algorithms
 {
-    class RabinKarpAlgorithm : ISubstringSearch
+    public class RabinKarpAlgorithm : ISubstringSearch
     {
         public IEnumerable<int> IndexesOf(string pattern, string text)
         {

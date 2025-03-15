@@ -2,7 +2,7 @@
 
 namespace SubstringSearchLibrary.Algorithms
 {
-    class BruteForceAlgorithm : ISubstringSearch
+    public class BruteForceAlgorithm : ISubstringSearch
     {
         public IEnumerable<int> IndexesOf(string pattern, string text)
         {

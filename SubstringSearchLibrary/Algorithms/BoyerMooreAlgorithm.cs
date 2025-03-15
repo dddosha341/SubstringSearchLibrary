@@ -2,7 +2,7 @@
 
 namespace SubstringSearchLibrary.Algorithms
 {
-    class BoyerMooreAlgorithm : ISubstringSearch
+    public class BoyerMooreAlgorithm : ISubstringSearch
     {
         public IEnumerable<int> IndexesOf(string pattern, string text)
         {
