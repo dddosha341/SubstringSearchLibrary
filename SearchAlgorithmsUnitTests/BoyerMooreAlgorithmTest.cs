@@ -1,6 +1,6 @@
 namespace SearchAlgorithmsUnitTests
 {
-    public class Tests
+    public class BoyerMooreAlgorithmTest
     {
         [SetUp]
         public void Setup()
