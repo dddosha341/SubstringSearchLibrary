@@ -61,9 +61,9 @@ namespace SubstringSearchLibrary.Algorithms
 
             while (i > 0)
             {
-                while (j <= length && pattern[i - 1] != pattern[j - 1])
+                while (j <= length && (j == length || pattern[i - 1] != pattern[j - 1]))
                 {
-                    if (table[j] == 0)
+                    if (j < length && table[j] == 0)
                         table[j] = j - i;
                     j = borderPos[j];
                 }
@@ -73,7 +73,7 @@ namespace SubstringSearchLibrary.Algorithms
             }
 
             j = borderPos[0];
-            for (i = 0; i <= length; i++)
+            for (i = 0; i < length; i++)
             {
                 if (table[i] == 0)
                     table[i] = j;
