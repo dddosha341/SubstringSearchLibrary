@@ -21,16 +21,20 @@ namespace SubstringSearchLibrary.Algorithms
             {
                 int j = patternLength - 1;
 
+                // Сравнение символов с конца шаблона
                 while (j >= 0 && pattern[j] == text[shift + j])
                     j--;
 
                 if (j < 0)
                 {
                     result.Add(shift);
-                    shift += goodSuffixTable[0];
+
+                    // Используем таблицу хороших суффиксов для сдвига
+                    shift += (shift + patternLength < textLength) ? goodSuffixTable[0] : 1;
                 }
                 else
                 {
+                    // Сдвиг на основе максимального значения из таблиц
                     shift += Math.Max(goodSuffixTable[j], j - badCharTable[text[shift + j]]);
                 }
             }
