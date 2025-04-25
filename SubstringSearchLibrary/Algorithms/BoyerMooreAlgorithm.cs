@@ -21,21 +21,23 @@ namespace SubstringSearchLibrary.Algorithms
             {
                 int j = patternLength - 1;
 
-                // Сравнение символов с конца шаблона
                 while (j >= 0 && pattern[j] == text[shift + j])
                     j--;
 
                 if (j < 0)
                 {
                     result.Add(shift);
-
-                    // Используем таблицу хороших суффиксов для сдвига
-                    shift += (shift + patternLength < textLength) ? patternLength - goodSuffixTable[0] : 1;
+                    shift += goodSuffixTable[0];
                 }
                 else
                 {
-                    // Сдвиг на основе максимального значения из таблиц
-                    shift += Math.Max(goodSuffixTable[j], j - (badCharTable.ContainsKey(text[shift + j]) ? badCharTable[text[shift + j]] : -1));
+                    char mismatchChar = text[shift + j];
+                    int badCharShift = badCharTable.TryGetValue(mismatchChar, out int lastIndex)
+                        ? Math.Max(1, j - lastIndex)
+                        : j + 1;
+
+                    int goodSuffixShift = goodSuffixTable[j];
+                    shift += Math.Max(badCharShift, goodSuffixShift);
                 }
             }
 
