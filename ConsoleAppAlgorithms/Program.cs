@@ -1,12 +1,13 @@
 ﻿using SubstringSearchLibrary.Implementations;
 using SubstringSearchLibrary.Algorithms;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ConsoleAppAlgorithms
 {
     internal class Program
     {
-        public static string PATTERN = "";
+        public static string PATTERN = "cdeab";
 
         internal static string TestedType(ISubstringSearch searcher)
         {
@@ -32,10 +33,7 @@ namespace ConsoleAppAlgorithms
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Enter The Path to txt File: ");
-            var path = Console.ReadLine()?.Replace("\"", "") ?? throw new ArgumentException();
-
-            var text = File.ReadAllText(path, System.Text.Encoding.UTF8);
+            string text = string.Concat(Enumerable.Repeat("abcde", 2_000_000)); // 10 млн символов
 
             List<ISubstringSearch> substringSearches = new List<ISubstringSearch>()
             {
@@ -48,14 +46,26 @@ namespace ConsoleAppAlgorithms
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            List<List<int>> indexesLists = new List<List<int>>();
+
             foreach(var searcher in substringSearches)
             {
                 sw.Restart();
-                var indexes = searcher.IndexesOf(PATTERN, text);
+                var indexes = searcher.IndexesOf(text, PATTERN);
                 sw.Stop();
+                indexesLists.Add(indexes.ToList());
                 Console.WriteLine($"{TestedType(searcher)} has been done by {sw.ElapsedMilliseconds}");
 
                 GC.Collect();
+            }
+
+            Console.WriteLine("They`ve got the similar result: ");
+            for(int i = 0; i < 4; i++)
+            {
+                for (int j = i + 1; j < 4; j++)
+                {
+                    Console.WriteLine(indexesLists[i].SequenceEqual(indexesLists[j]));
+                }
             }
 
             return;

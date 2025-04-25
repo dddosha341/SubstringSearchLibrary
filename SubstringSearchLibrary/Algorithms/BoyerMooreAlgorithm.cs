@@ -4,22 +4,35 @@ namespace SubstringSearchLibrary.Algorithms
 {
     public class BoyerMooreAlgorithm : ISubstringSearch
     {
+        private int[] badCharTable = new int[0];
+
+        private void BuildBadCharTable(string pattern)
+        {
+            int m = pattern.Length;
+            badCharTable = new int[256];
+
+            for (int i = 0; i < 256; i++)
+                badCharTable[i] = -1;
+
+            for (int i = 0; i < m; i++)
+                badCharTable[(int)pattern[i]] = i;
+        }
+
         public IEnumerable<int> IndexesOf(string text, string pattern)
         {
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(pattern) || pattern.Length > text.Length)
-                return Enumerable.Empty<int>();
+            if(pattern.Length == 0 || text.Length == 0) return Enumerable.Empty<int>();
 
-            var badCharTable = BuildBadCharTable(pattern);
-            var goodSuffixTable = BuildGoodSuffixTable(pattern);
+            int n = text.Length;
+            int m = pattern.Length;
 
-            var result = new List<int>();
-            int textLength = text.Length;
-            int patternLength = pattern.Length;
+            BuildBadCharTable(pattern);
+
+            List<int> result = new List<int>();
             int shift = 0;
 
-            while (shift <= textLength - patternLength)
+            while (shift <= n - m)
             {
-                int j = patternLength - 1;
+                int j = m - 1;
 
                 while (j >= 0 && pattern[j] == text[shift + j])
                     j--;
@@ -27,79 +40,17 @@ namespace SubstringSearchLibrary.Algorithms
                 if (j < 0)
                 {
                     result.Add(shift);
-                    shift += goodSuffixTable[0];
+                    // Сдвигаем на 1, чтобы найти перекрывающиеся вхождения
+                    shift += 1;
                 }
                 else
                 {
-                    char mismatchChar = text[shift + j];
-                    int badCharShift = badCharTable.TryGetValue(mismatchChar, out int lastIndex)
-                        ? Math.Max(1, j - lastIndex)
-                        : j + 1;
-
-                    int goodSuffixShift = goodSuffixTable[j];
-                    shift += Math.Max(badCharShift, goodSuffixShift);
+                    int badCharIndex = (int)text[shift + j];
+                    shift += Math.Max(1, j - badCharTable[badCharIndex]);
                 }
             }
 
             return result;
-        }
-
-        private Dictionary<char, int> BuildBadCharTable(string pattern)
-        {
-            var table = new Dictionary<char, int>();
-            for (int i = 0; i < pattern.Length; i++)
-                table[pattern[i]] = i;
-
-            return table;
-        }
-
-        private int[] BuildGoodSuffixTable(string pattern)
-        {
-            int m = pattern.Length;
-            var table = new int[m];
-            var suffixes = new int[m];
-
-            suffixes[m - 1] = m;
-            int g = m - 1;
-            int f = 0;
-
-            for (int i = m - 2; i >= 0; --i)
-            {
-                if (i > g && suffixes[i + m - 1 - f] < i - g)
-                {
-                    suffixes[i] = suffixes[i + m - 1 - f];
-                }
-                else
-                {
-                    if (i < g)
-                        g = i;
-                    f = i;
-                    while (g >= 0 && pattern[g] == pattern[g + m - 1 - f])
-                        --g;
-                    suffixes[i] = f - g;
-                }
-            }
-
-            for (int i = 0; i < m; ++i)
-                table[i] = m;
-
-            int j = 0;
-            for (int i = m - 1; i >= 0; --i)
-            {
-                if (suffixes[i] == i + 1)
-                {
-                    for (; j < m - 1 - i; ++j)
-                    {
-                        if (table[j] == m)
-                            table[j] = m - 1 - i;
-                    }
-                }
-            }
-
-            for (int i = 0; i <= m - 2; ++i)
-                table[m - 1 - suffixes[i]] = m - 1 - i;
-
-            return table;
         }
     }
 }
