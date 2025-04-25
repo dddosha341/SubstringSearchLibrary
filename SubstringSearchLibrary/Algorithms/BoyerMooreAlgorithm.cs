@@ -53,33 +53,49 @@ namespace SubstringSearchLibrary.Algorithms
 
         private int[] BuildGoodSuffixTable(string pattern)
         {
-            int length = pattern.Length;
-            var table = new int[length];
-            var borderPos = new int[length + 1];
-            int i = length, j = length + 1;
-            borderPos[i] = j;
+            int m = pattern.Length;
+            var table = new int[m];
+            var suffixes = new int[m];
 
-            while (i > 0)
+            suffixes[m - 1] = m;
+            int g = m - 1;
+            int f = 0;
+
+            for (int i = m - 2; i >= 0; --i)
             {
-                while (j <= length && (j == length || pattern[i - 1] != pattern[j - 1]))
+                if (i > g && suffixes[i + m - 1 - f] < i - g)
                 {
-                    if (j < length && table[j] == 0)
-                        table[j] = j - i;
-                    j = borderPos[j];
+                    suffixes[i] = suffixes[i + m - 1 - f];
                 }
-                i--;
-                j--;
-                borderPos[i] = j;
+                else
+                {
+                    if (i < g)
+                        g = i;
+                    f = i;
+                    while (g >= 0 && pattern[g] == pattern[g + m - 1 - f])
+                        --g;
+                    suffixes[i] = f - g;
+                }
             }
 
-            j = borderPos[0];
-            for (i = 0; i < length; i++)
+            for (int i = 0; i < m; ++i)
+                table[i] = m;
+
+            int j = 0;
+            for (int i = m - 1; i >= 0; --i)
             {
-                if (table[i] == 0)
-                    table[i] = j;
-                if (i == j)
-                    j = borderPos[j];
+                if (suffixes[i] == i + 1)
+                {
+                    for (; j < m - 1 - i; ++j)
+                    {
+                        if (table[j] == m)
+                            table[j] = m - 1 - i;
+                    }
+                }
             }
+
+            for (int i = 0; i <= m - 2; ++i)
+                table[m - 1 - suffixes[i]] = m - 1 - i;
 
             return table;
         }
