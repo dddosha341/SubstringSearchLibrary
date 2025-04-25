@@ -35,20 +35,16 @@ namespace SubstringSearchLibrary.Algorithms
                 else
                 {
                     // Сдвиг на основе максимального значения из таблиц
-                    shift += Math.Max(goodSuffixTable[j], j - badCharTable[text[shift + j]]);
+                    shift += Math.Max(goodSuffixTable[j], j - (badCharTable.ContainsKey(text[shift + j]) ? badCharTable[text[shift + j]] : -1));
                 }
             }
 
             return result;
         }
 
-        private int[] BuildBadCharTable(string pattern)
+        private Dictionary<char, int> BuildBadCharTable(string pattern)
         {
-            const int alphabetSize = 256; // ASCII
-            var table = new int[alphabetSize];
-            for (int i = 0; i < alphabetSize; i++)
-                table[i] = -1;
-
+            var table = new Dictionary<char, int>();
             for (int i = 0; i < pattern.Length; i++)
                 table[pattern[i]] = i;
 
