@@ -30,7 +30,7 @@ namespace SubstringSearchLibrary.Algorithms
                     result.Add(shift);
 
                     // Используем таблицу хороших суффиксов для сдвига
-                    shift += (shift + patternLength < textLength) ? goodSuffixTable[0] : 1;
+                    shift += (shift + patternLength < textLength) ? patternLength - goodSuffixTable[0] : 1;
                 }
                 else
                 {
